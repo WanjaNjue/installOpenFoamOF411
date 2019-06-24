@@ -1,0 +1,59 @@
+sudo -s
+
+
+
+apt-get update
+
+apt-get install git-core build-essential binutils-dev cmake flex bison zlib1g-dev qt4-dev-tools libqt4-dev libqtwebkit-dev gnuplot \
+libreadline-dev libncurses-dev libxt-dev libopenmpi-dev openmpi-bin libboost-system-dev libboost-thread-dev libgmp-dev \
+libmpfr-dev python python-dev libcgal-dev
+
+apt-get install libglu1-mesa-dev libqt4-opengl-dev
+
+exit
+
+#OpenFOAM downloading and installation
+cd ~
+mkdir OpenFOAM
+cd OpenFOAM
+wget "http://download.openfoam.org/source/4-1" -O OpenFOAM-4.1.tgz
+wget "http://download.openfoam.org/third-party/4-1" -O ThirdParty-4.1.tgz
+ 
+tar -xzf OpenFOAM-4.1.tgz
+tar -xzf ThirdParty-4.1.tgz
+ 
+mv OpenFOAM-4.x-version-4.1 OpenFOAM-4.1
+mv ThirdParty-4.x-version-4.1 ThirdParty-4.1
+
+ln -s /usr/bin/mpicc.openmpi OpenFOAM-4.1/bin/mpicc
+ln -s /usr/bin/mpirun.openmpi OpenFOAM-4.1/bin/mpirun
+
+source $HOME/OpenFOAM/OpenFOAM-4.1/etc/bashrc WM_LABEL_SIZE=64 FOAMY_HEX_MESH=yes
+
+
+echo "alias of41='source \$HOME/OpenFOAM/OpenFOAM-4.1/etc/bashrc $FOAM_SETTINGS'" >> $HOME/.bashrc
+
+cd $WM_THIRD_PARTY_DIR
+export QT_SELECT=qt4
+
+
+
+#this will take a while... somewhere between 30 minutes to 2 hours or more
+./makeParaView -python -mpi -python-lib /usr/lib/x86_64-linux-gnu/libpython2.7.so.1.0 > log.makePV 2>&1
+
+
+
+
+wmRefresh
+
+cd $WM_PROJECT_DIR
+export QT_SELECT=qt4
+
+./Allwmake -j 4 > log.make 2>&1
+
+
+
+
+./Allwmake -j 4 > log.make 2>&1
+
+icoFoam -help
